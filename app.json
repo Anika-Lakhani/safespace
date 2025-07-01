@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "safety-app",
-    "slug": "safety-app",
+    "name": "SafeSpace",
+    "slug": "safespace",
     "version": "1.0.0",
+    "sdkVersion": "53.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -10,20 +11,38 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#6B46C1"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.safespace.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "SafeSpace needs access to your location to show nearby users and send assistance requests.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "SafeSpace needs access to your location to provide safety features and emergency assistance."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#6B46C1"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.safespace.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow SafeSpace to use your location for safety features and emergency assistance."
+        }
+      ]
+    ]
   }
 }

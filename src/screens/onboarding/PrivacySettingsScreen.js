@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
   Switch,
   Alert
 } from 'react-native';
@@ -65,7 +66,11 @@ const PrivacySettingsScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>{ONBOARDING_MESSAGES.privacy.title}</Text>
@@ -144,7 +149,7 @@ const PrivacySettingsScreen = ({ navigation, route }) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -154,10 +159,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: SIZES.padding * 1.5,
     paddingVertical: SIZES.padding * 2,
+    minHeight: '100%',
   },
   header: {
     alignItems: 'center',

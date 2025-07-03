@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import { COLORS, SIZES, ONBOARDING_MESSAGES, GENDER_OPTIONS } from '../../utils/constants';
 
@@ -23,7 +24,11 @@ const GenderSelectionScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>{ONBOARDING_MESSAGES.gender.title}</Text>
@@ -83,7 +88,7 @@ const GenderSelectionScreen = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -93,10 +98,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: SIZES.padding * 1.5,
     paddingVertical: SIZES.padding * 2,
+    minHeight: '100%',
   },
   header: {
     alignItems: 'center',

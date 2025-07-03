@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
   Alert,
   Linking
 } from 'react-native';
@@ -86,7 +87,11 @@ const LocationPermissionScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>{ONBOARDING_MESSAGES.location.title}</Text>
@@ -152,7 +157,7 @@ const LocationPermissionScreen = ({ navigation }) => {
             <Text style={styles.skipButtonText}>Skip for now</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -162,10 +167,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: SIZES.padding * 1.5,
     paddingVertical: SIZES.padding * 2,
+    minHeight: '100%',
   },
   header: {
     alignItems: 'center',

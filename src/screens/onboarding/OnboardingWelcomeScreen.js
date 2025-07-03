@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Image
+  ScrollView
 } from 'react-native';
 import { COLORS, SIZES, ONBOARDING_MESSAGES } from '../../utils/constants';
 
@@ -16,7 +16,11 @@ const OnboardingWelcomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Logo/Branding Area */}
         <View style={styles.logoContainer}>
           <View style={styles.logoCircle}>
@@ -61,7 +65,7 @@ const OnboardingWelcomeScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -71,10 +75,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: SIZES.padding * 1.5,
     paddingVertical: SIZES.padding * 2,
+    minHeight: '100%',
   },
   logoContainer: {
     alignItems: 'center',

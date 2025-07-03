@@ -17,7 +17,7 @@ import AlertService from '../services/AlertService';
 import { requestLocationPermission, checkLocationPermission } from '../utils/permissions';
 import { MockDataService } from '../services/MockDataService';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [userLocation, setUserLocation] = useState(null);
   const [nearbyUsersCount, setNearbyUsersCount] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -110,7 +110,10 @@ const HomeScreen = () => {
   };
 
   const handleSettingsPress = () => {
-    Alert.alert('Settings', 'Settings screen will be implemented in Phase 2');
+    // Navigate to settings screen
+    if (navigation) {
+      navigation.navigate('Settings');
+    }
   };
 
   if (isLoading) {

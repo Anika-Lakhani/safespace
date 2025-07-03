@@ -1,18 +1,128 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Switch,
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SIZES } from '../utils/constants';
+import UserProfileService from '../services/UserProfileService';
+import { COLORS, SIZES, GENDER_OPTIONS } from '../utils/constants';
 
 const SettingsScreen = ({ navigation }) => {
+  const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const loadUserProfile = async () => {
+    try {
+      const profile = await UserProfileService.getUserProfile();
+      setUserProfile(profile);
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleBackPress = () => {
     navigation.goBack();
   };
+
+  const handleGenderChange = async (newGender) => {
+    try {
+      await UserProfileService.updateGender(newGender);
+      setUserProfile(prev => ({ ...prev, gender: newGender }));
+    } catch (error) {
+      console.error('Error updating gender:', error);
+      Alert.alert('Error', 'Failed to update gender setting');
+    }
+  };
+
+  const handlePrivacyToggle = async (key) => {
+    try {
+      const newSettings = {
+        ...userProfile.privacySettings,
+        [key]: !userProfile.privacySettings[key]
+      };
+      await UserProfileService.updatePrivacySettings(newSettings);
+      setUserProfile(prev => ({
+        ...prev,
+        privacySettings: newSettings
+      }));
+    } catch (error) {
+      console.error('Error updating privacy settings:', error);
+      Alert.alert('Error', 'Failed to update privacy setting');
+    }
+  };
+
+  const handleReset = () => {
+    Alert.alert(
+      'Reset All Data',
+      'This will clear all your settings and data. You will need to complete onboarding again. This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await UserProfileService.resetUserProfile();
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Welcome' }],
+              });
+            } catch (error) {
+              console.error('Error resetting profile:', error);
+              Alert.alert('Error', 'Failed to reset data');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const renderToggleRow = (key, title, description) => (
+    <View style={styles.toggleRow}>
+      <View style={styles.toggleContent}>
+        <Text style={styles.toggleTitle}>{title}</Text>
+        <Text style={styles.toggleDescription}>{description}</Text>
+      </View>
+      <Switch
+        value={userProfile?.privacySettings?.[key] || false}
+        onValueChange={() => handlePrivacyToggle(key)}
+        trackColor={{ false: COLORS.lightGray, true: COLORS.primary }}
+        thumbColor={COLORS.white}
+        ios_backgroundColor={COLORS.lightGray}
+      />
+    </View>
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Settings</Text>
+          <View style={styles.placeholder} />
+        </View>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading settings...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -29,22 +139,87 @@ const SettingsScreen = ({ navigation }) => {
       </View>
 
       <ScrollView style={styles.content}>
+        {/* Profile Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Coming Soon</Text>
-          <Text style={styles.sectionDescription}>
-            Settings and configuration options will be available in Phase 2 of development.
-          </Text>
+          <Text style={styles.sectionTitle}>Profile</Text>
+          <View style={styles.profileItem}>
+            <Text style={styles.profileLabel}>Gender Identity</Text>
+            <View style={styles.genderOptions}>
+              {GENDER_OPTIONS.map((option) => (
+                <TouchableOpacity
+                  key={option.id}
+                  style={[
+                    styles.genderOption,
+                    userProfile?.gender === option.id && styles.selectedGenderOption
+                  ]}
+                  onPress={() => handleGenderChange(option.id)}
+                >
+                  <Text style={[
+                    styles.genderOptionText,
+                    userProfile?.gender === option.id && styles.selectedGenderOptionText
+                  ]}>
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
         </View>
 
+        {/* Privacy Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Planned Features</Text>
-          <View style={styles.featureList}>
-            <Text style={styles.featureItem}>• Alert radius configuration</Text>
-            <Text style={styles.featureItem}>• Privacy controls</Text>
-            <Text style={styles.featureItem}>• Emergency contacts</Text>
-            <Text style={styles.featureItem}>• Notification preferences</Text>
-            <Text style={styles.featureItem}>• Account settings</Text>
-          </View>
+          <Text style={styles.sectionTitle}>Privacy</Text>
+          <Text style={styles.sectionDescription}>
+            Control who can see you on the map and respond to your requests.
+          </Text>
+          
+          <Text style={styles.subsectionTitle}>Who can see me on the map</Text>
+          {renderToggleRow(
+            'visibleToMen',
+            'Men can see me',
+            'Allow men to see your location'
+          )}
+          {renderToggleRow(
+            'visibleToWomen',
+            'Women can see me',
+            'Allow women to see your location'
+          )}
+          {renderToggleRow(
+            'visibleToNonBinary',
+            'Non-binary users can see me',
+            'Allow non-binary users to see your location'
+          )}
+
+          <Text style={styles.subsectionTitle}>Who can respond to my requests</Text>
+          {renderToggleRow(
+            'canReceiveRequestsFromMen',
+            'Men can respond to my requests',
+            'Allow men to respond to your assistance requests'
+          )}
+          {renderToggleRow(
+            'canReceiveRequestsFromWomen',
+            'Women can respond to my requests',
+            'Allow women to respond to your assistance requests'
+          )}
+          {renderToggleRow(
+            'canReceiveRequestsFromNonBinary',
+            'Non-binary users can respond to my requests',
+            'Allow non-binary users to respond to your assistance requests'
+          )}
+        </View>
+
+        {/* Reset Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Data & Privacy</Text>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={handleReset}
+          >
+            <Text style={styles.resetButtonText}>Reset All Data</Text>
+          </TouchableOpacity>
+          <Text style={styles.resetDescription}>
+            This will clear all your settings and data. You will need to complete onboarding again.
+          </Text>
         </View>
       </ScrollView>
     </View>
@@ -104,6 +279,97 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     marginBottom: SIZES.margin / 2,
     lineHeight: 22,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: COLORS.gray,
+  },
+  profileItem: {
+    marginBottom: SIZES.padding,
+  },
+  profileLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.text,
+    marginBottom: SIZES.padding,
+  },
+  genderOptions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  genderOption: {
+    flex: 1,
+    paddingVertical: SIZES.padding,
+    paddingHorizontal: SIZES.padding / 2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.borderRadius,
+    marginHorizontal: SIZES.margin / 2,
+    alignItems: 'center',
+  },
+  selectedGenderOption: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  genderOptionText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: COLORS.text,
+  },
+  selectedGenderOptionText: {
+    color: COLORS.white,
+  },
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginTop: SIZES.padding * 2,
+    marginBottom: SIZES.padding,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SIZES.padding,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.lightGray,
+  },
+  toggleContent: {
+    flex: 1,
+    marginRight: SIZES.padding,
+  },
+  toggleTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  toggleDescription: {
+    fontSize: 14,
+    color: COLORS.gray,
+    lineHeight: 18,
+  },
+  resetButton: {
+    backgroundColor: COLORS.emergency,
+    paddingVertical: SIZES.padding,
+    paddingHorizontal: SIZES.padding * 2,
+    borderRadius: SIZES.borderRadius,
+    alignItems: 'center',
+    marginBottom: SIZES.padding,
+  },
+  resetButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  resetDescription: {
+    fontSize: 14,
+    color: COLORS.gray,
+    lineHeight: 20,
   },
 });
 

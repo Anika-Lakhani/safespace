@@ -10,13 +10,19 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/native": "^7.1.14",
+    "@react-navigation/stack": "^7.4.2",
     "expo": "~53.0.0",
     "expo-location": "~18.1.0",
     "expo-permissions": "~14.4.0",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.4",
-    "react-native-maps": "1.20.1"
+    "react-native-gesture-handler": "^2.27.1",
+    "react-native-maps": "1.20.1",
+    "react-native-safe-area-context": "^5.5.1",
+    "react-native-screens": "^4.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

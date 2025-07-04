@@ -231,10 +231,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SIZES.padding,
     paddingVertical: SIZES.padding,
+    paddingTop: SIZES.padding * 2,
     backgroundColor: COLORS.white,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    height: SIZES.headerHeight,
+    height: SIZES.headerHeight + SIZES.padding * 2,
   },
   headerLeft: {
     flex: 1,

@@ -94,6 +94,23 @@ class UserProfileService {
   }
 
   /**
+   * Clear onboarding status only (for testing)
+   * @returns {Promise<boolean>} - Success status
+   */
+  static async clearOnboardingStatus() {
+    const profile = await this.getUserProfile();
+    if (profile) {
+      const updatedProfile = {
+        ...profile,
+        hasCompletedOnboarding: false
+      };
+      const success = await StorageService.setItem(STORAGE_KEYS.USER_PROFILE, updatedProfile);
+      return success;
+    }
+    return true; // No profile exists, so onboarding is already not completed
+  }
+
+  /**
    * Get user's privacy settings
    * @returns {Promise<Object>} - Current privacy settings
    */

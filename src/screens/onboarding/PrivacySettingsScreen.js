@@ -29,9 +29,10 @@ const PrivacySettingsScreen = ({ navigation, route }) => {
     
     try {
       await UserProfileService.createUserProfile(selectedGender, privacySettings);
+      // Navigate to the main app
       navigation.reset({
         index: 0,
-        routes: [{ name: 'MainApp' }],
+        routes: [{ name: 'Home' }],
       });
     } catch (error) {
       console.error('Error creating user profile:', error);
@@ -66,6 +67,16 @@ const PrivacySettingsScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Back Button */}
+      <View style={styles.backButtonContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -166,6 +177,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding * 1.5,
     paddingVertical: SIZES.padding * 2,
     minHeight: '100%',
+  },
+  backButtonContainer: {
+    paddingHorizontal: SIZES.padding * 1.5,
+    paddingTop: SIZES.padding,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: SIZES.padding,
+    paddingHorizontal: SIZES.padding,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: '500',
   },
   header: {
     alignItems: 'center',

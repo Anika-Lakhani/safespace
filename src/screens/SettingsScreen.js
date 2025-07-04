@@ -221,6 +221,76 @@ const SettingsScreen = ({ navigation }) => {
             This will clear all your settings and data. You will need to complete onboarding again.
           </Text>
         </View>
+
+        {/* Debug Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Debug & Testing</Text>
+          <TouchableOpacity
+            style={styles.debugButton}
+            onPress={() => {
+              Alert.alert(
+                'Debug Info',
+                `Onboarding Completed: ${userProfile?.hasCompletedOnboarding}\nUser ID: ${userProfile?.userId}\nGender: ${userProfile?.gender}\nCreated: ${userProfile?.createdAt}`,
+                [{ text: 'OK' }]
+              );
+            }}
+          >
+            <Text style={styles.debugButtonText}>Show Debug Info</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.debugButton}
+            onPress={() => {
+              Alert.alert(
+                'Restart Onboarding',
+                'This will take you back to the onboarding flow without clearing your data.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Restart',
+                    onPress: () => {
+                      navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Welcome' }],
+                      });
+                    }
+                  }
+                ]
+              );
+            }}
+          >
+            <Text style={styles.debugButtonText}>Restart Onboarding</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.debugButton}
+            onPress={async () => {
+              try {
+                await UserProfileService.clearOnboardingStatus();
+                Alert.alert(
+                  'Onboarding Status Cleared',
+                  'The app will now show onboarding for new users. Restart the app to see the effect.',
+                  [
+                    {
+                      text: 'Restart App',
+                      onPress: () => {
+                        navigation.reset({
+                          index: 0,
+                          routes: [{ name: 'Welcome' }],
+                        });
+                      }
+                    },
+                    { text: 'OK' }
+                  ]
+                );
+              } catch (error) {
+                Alert.alert('Error', 'Failed to clear onboarding status');
+              }
+            }}
+          >
+            <Text style={styles.debugButtonText}>Clear Onboarding Status</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -370,6 +440,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.gray,
     lineHeight: 20,
+  },
+  debugButton: {
+    backgroundColor: COLORS.gray,
+    paddingVertical: SIZES.padding,
+    paddingHorizontal: SIZES.padding * 2,
+    borderRadius: SIZES.borderRadius,
+    alignItems: 'center',
+    marginBottom: SIZES.padding,
+  },
+  debugButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
